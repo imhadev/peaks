@@ -1,0 +1,17 @@
+<!DOCTYPE html>	
+<html>
+	<head>
+		<meta charset = UTF-8>
+		<link href = "{{ url_for('static', filename='index-style.css') }}" rel = "stylesheet" type = "text/css"/>
+	</head>
+	<body>
+		<div class = content>
+			<div class = submit>
+				<form action="/action_page.php">
+				  email/link: <input type="text" name="email"><br>
+				  <input type="submit" value="Submit">
+				</form>
+			</div>
+		</div>
+	</body>
+</html>

@@ -1,0 +1,28 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    display: table;
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    background-color: grey;
+}
+
+.content {
+	display: table-cell;
+    vertical-align: middle;
+
+	background-color: #1d1e22;
+}
+
+.submit {
+	width: 300px;
+	padding: 10px;
+    margin: auto;   
+    text-align: center;
+
+	background-color: #fcfcfc;
+}
