@@ -1,6 +1,15 @@
 import requests
 import re
 
+from celery import Celery
+
+app = Celery(broker='redis://localhost:6379/0', backend='redis://localhost:6379/0')
+
+@app.task
+def gettimecodes(video_id):
+    timestamps = load_timestamps(f'https://www.twitch.tv/videos/{video_id}')
+    return timestamps
+
 
 def load_portion(video_id, cursor=None):
     if cursor:
@@ -31,7 +40,7 @@ def load_timestamps(url):
         return []
 
     match = re.search(r'^.*www\.twitch\.tv\/videos\/(\d+)$', url)
-    
+
     if not match:
         return []
 
@@ -41,14 +50,9 @@ def load_timestamps(url):
     timestamps_portion, next_cursor = load_portion(video_id)
     timestamps.extend(timestamps_portion)
 
-    while next_cursor and timestamps_portion:
-        timestamps_portion, next_cursor = load_portion(video_id, next_cursor)
-        timestamps.extend(timestamps_portion)
+    # while next_cursor and timestamps_portion:
+    #     timestamps_portion, next_cursor = load_portion(video_id, next_cursor)
+    #     timestamps.extend(timestamps_portion)
+    #     print(timestamps[-1])
 
-        print(timestamps[-1])
-       
     return timestamps
-
-
-timestamps = load_timestamps('https://www.twitch.tv/videos/390216149')
-print(timestamps)
