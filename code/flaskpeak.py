@@ -1,7 +1,9 @@
-import sys,os
+import os
+import sys
+
 sys.path.append(os.getcwd())
 
-from flask import Flask, render_template, url_for, request
+from flask import Flask, render_template, request
 from celerypeak import gettimecodes
 
 app = Flask(__name__)
