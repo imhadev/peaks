@@ -20,10 +20,6 @@ body {
   flex-direction: column;
 }
 
-.wrapperclass {
-
-}
-
 #header {
   height: 250px;
 
@@ -53,12 +49,9 @@ body {
     position: absolute;
     top: 0; left: 0; bottom: 210px; right: 0;
 
-    width: 315px;
-    height: 120px;
+    width: 300px;
+    height: 190px;
     padding: 15px;
-
-    padding-right: 45px;
-    padding-top: 20px;
 
     text-align: right;
 
@@ -66,22 +59,19 @@ body {
     background-color: #fcfcfc;
 }
 
-.mail {
-    margin: auto;
-    position: absolute;
-    top: 0; left: 0; bottom: -50px; right: 0;
+.resulttab {
+    padding-top: 30px;
+    padding-right: 20px;
+}
 
-    width: 315px;
-    height: 90px;
-    padding: 15px;
-
-    padding-right: 45px;
+.submittab {
     padding-top: 20px;
+    padding-right: 20px;
+}
 
-    text-align: right;
-
-    color: #1d1e22;
-    background-color: #fcfcfc;
+.codetab {
+    padding-top: 30px;
+    padding-right: 20px;
 }
 
 #footer {
