@@ -1,3 +1,9 @@
+class hl:
+    def __init__(self, leftp, rightp, cofp):
+        self.leftp = leftp
+        self.rightp = rightp
+        self.cofp = cofp
+
 tststr = 'Pogcs fwwf FFWFWGW POGGERS poGfwwf grpagger phchomp'
 
 x = 0
@@ -29,3 +35,25 @@ for i in range(int(timestamps[len(timestamps) - 1] / 5) + 1):
 testar[1] += 1
 
 print(testar)
+print('-------')
+
+peakresultar = []
+
+highlightel = hl(2, 4, 7)
+peakresultar.append(highlightel)
+
+highlightel = hl(11, 15, 6)
+peakresultar.append(highlightel)
+
+highlightel = hl(6, 9, 10)
+peakresultar.append(highlightel)
+
+
+peakresultar.sort(key=lambda x: x.leftp)
+
+print(peakresultar[2].leftp)
+
+
+print('--------')
+
+print(0 % 2)

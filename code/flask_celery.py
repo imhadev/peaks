@@ -12,13 +12,19 @@ from flask import Flask, render_template, request, flash, redirect, url_for
 from flask_mail import Mail, Message
 from celery import Celery
 
+class hl:
+    def __init__(self, leftp, rightp, cofp):
+        self.leftp = leftp
+        self.rightp = rightp
+        self.cofp = cofp
+
 mail_settings = {
     "MAIL_SERVER": 'smtp.gmail.com',
     "MAIL_PORT": 465,
     "MAIL_USE_TLS": False,
     "MAIL_USE_SSL": True,
     "MAIL_USERNAME": 'peakserviceofficial@gmail.com',
-    "MAIL_PASSWORD": '********'
+    "MAIL_PASSWORD": '*********'
 }
 
 app = Flask(__name__)
@@ -49,6 +55,7 @@ def about():
 def chart(videoid):
     timestampsres = r.get(videoid).decode("utf-8")
     timestampsresvalues = timestampsres.split()
+    print(timestampsresvalues)
     return render_template('chart.html', values=timestampsresvalues)
 
 
@@ -57,10 +64,10 @@ def videoresult():
     video_id = request.form['videoid']
 
     if (video_id):
-        if (r.get(video_id).decode("utf-8") == '-1'):
-            flash('video is processing', category='info')
-        else:
+        if (r.get(video_id)) and (r.get(video_id).decode("utf-8") != '-1'):
             return redirect(url_for('chart', videoid=video_id))
+        elif (r.get(video_id)) and (r.get(video_id).decode("utf-8") == '-1'):
+            flash('video is processing', category='info')
     else:
         flash('invalid video id', category='warning')
 
@@ -89,16 +96,21 @@ def videocode():
     video_id = request.form['videoid']
     video_code = request.form['videocode']
 
-    r.set(video_id, -1)
     peakfunc.delay(video_id)
 
     # if (video_id) and (video_code):
-    #     if (r.get(video_code)):
-    #         r.delete(video_code)
-    #         peakfunc.delay(video_id)
-    #         flash('video is processing, come back later to check the result', category='success')
+    #     if (r.get(video_id)) and (r.get(video_id).decode("utf-8") != '-1'):
+    #         flash('video is already processed', category='info')
+    #     elif (r.get(video_id)) and (r.get(video_id).decode("utf-8") == '-1'):
+    #         flash('video is processing', category='info')
     #     else:
-    #         flash('invalid video code', category='warning')
+    #         if (r.get(video_code)):
+    #             r.delete(video_code)
+    #             r.set(video_id, -1)
+    #             peakfunc.delay(video_id)
+    #             flash('video is processing, come back later to check the result', category='success')
+    #         else:
+    #             flash('invalid video code', category='warning')
     # else:
     #     flash('invalid video id or code', category='warning')
 
@@ -108,7 +120,6 @@ def videocode():
 @celery.task(name='__main__.peakfunc')
 def peakfunc(video_id):
     timestamps = load_timestamps(f'https://www.twitch.tv/videos/{video_id}')
-    # str1 = ' '.join(str(e) for e in timestamps)
     r.set(video_id, timestamps)
 
 
@@ -131,48 +142,14 @@ def load_portion(video_id, cursor=None):
     comments = parsed_response.get('comments')
 
     combody = []
+    comtime = []
     for comment in comments:
-        combody.append(comment['message']['body'].lower() + ' ' + str(comment['content_offset_seconds']))
-
-    timestampscof1 = []
-    timestampscof2 = []
-    cof = 3
-
-    lastcomment = comments[-1]
-    lastoffset = lastcomment['content_offset_seconds']
-
-    print(lastoffset)
-    print('...')
-
-    for i in range(int(lastoffset / cof) + 1):
-        timestampscof1.append(0)
-        timestampscof2.append(0)
-
-    for comment in comments:
-        timestampscof1[int(comment['content_offset_seconds'] / cof)] += 1
-        if 'pog' in comment['message']['body'].lower() or \
-                'lul' in comment['message']['body'].lower() or \
-                'chomp' in comment['message']['body'].lower() or \
-                'pag' in comment['message']['body'].lower():
-            timestampscof2[int(comment['content_offset_seconds'] / cof)] += 1
-
-    print(combody)
-    print('...')
-    print(timestampscof1)
-    print('...')
-    print(timestampscof2)
-    print('...')
-
-    for x in range(len(timestampscof1)):
-        if timestampscof1[x] != 0:
-            timestampscof1[x] = timestampscof1[x] * (timestampscof2[x] / timestampscof1[x] / 2 + 1)
-
-    print(timestampscof1)
-    print('-----------------------')
+        combody.append(comment['message']['body'].lower())
+        comtime.append(comment['content_offset_seconds'])
 
     next_cursor = parsed_response.get('_next')
 
-    return timestampscof1, next_cursor
+    return combody, comtime, next_cursor
 
 
 def load_timestamps(url):
@@ -185,19 +162,58 @@ def load_timestamps(url):
         return []
 
     video_id = match[1]
-    timestamps = []
 
-    timestamps_portion, next_cursor = load_portion(video_id)
-    timestamps.extend(timestamps_portion)
+    combody = []
+    comtime = []
 
-    for p in range(2):
-        timestamps_portion, next_cursor = load_portion(video_id, next_cursor)
-        timestamps.extend(timestamps_portion)
+    combody_portion, comtime_portion, next_cursor = load_portion(video_id)
+    combody.extend(combody_portion)
+    comtime.extend(comtime_portion)
 
-    # while next_cursor and timestamps_portion:
-    #     timestamps_portion, next_cursor = load_portion(video_id, next_cursor)
-    #     timestamps.extend(timestamps_portion)
+    # for p in range(2):
+    #     combody_portion, comtime_portion, next_cursor = load_portion(video_id, next_cursor)
+    #     combody.extend(combody_portion)
+    #     comtime.extend(comtime_portion)
 
+    while next_cursor and comtime:
+        combody_portion, comtime_portion, next_cursor = load_portion(video_id, next_cursor)
+        combody.extend(combody_portion)
+        comtime.extend(comtime_portion)
+
+    peakresult = set_cof(combody, comtime)
+
+    return peakresult
+
+
+def set_cof(combody, comtime):
+    timestampscof1 = []
+    timestampscof2 = []
+    cof = 5
+
+    lastoffset = comtime[-1]
+
+    for i in range(int(lastoffset / cof) + 1):
+        timestampscof1.append(0)
+        timestampscof2.append(0)
+
+    for j in range(len(combody)):
+        timestampscof1[int(comtime[j] / cof)] += 1
+        if 'pog' in combody[j] or \
+                'lul' in combody[j] or \
+                'chomp' in combody[j] or \
+                'pag' in combody[j]:
+            timestampscof2[int(comtime[j] / cof)] += 1
+
+    for x in range(len(timestampscof1)):
+        if timestampscof1[x] != 0:
+            timestampscof1[x] = int(timestampscof1[x] * (timestampscof2[x] / timestampscof1[x] / 2 + 1))
+
+    peakresult = get_peakresult(timestampscof1)
+
+    return peakresult
+
+
+def get_peakresult(timestamps):
     timestampscheck = []
     sum = 0
 
@@ -207,12 +223,13 @@ def load_timestamps(url):
 
     avg = sum / len(timestamps)
 
-    coftop = 2
-    peakresult = ''
-    numpeaks = 0
-    f = True
-    while (numpeaks < 10) and (f):
+    peakresultarar = []
+    peakresultavgar = []
 
+    numpeaks = 0
+    coftop = 2
+    f = True
+    while (numpeaks < 10) and f:
         peakresultar = []
         peakresultidar = []
         maxp = 0
@@ -232,7 +249,7 @@ def load_timestamps(url):
             qleft = i - 1
             qright = i + 1
             g = True
-            while (peaklen <= 12) and (g):
+            while (peaklen <= 12) and g:
                 if (qleft < 0) and (qright >= len(timestamps)):
                     g = False
                 else:
@@ -288,10 +305,44 @@ def load_timestamps(url):
             for res in peakresultar:
                 peaksum = peaksum + res
 
-            peakavg = peaksum / len(peakresultar)
+            peakavg = int(peaksum / len(peakresultar))
 
-            peakresult = peakresult + str(minl) + ' ' + str(maxr) + ' ' + str(peakavg) + ' '
+            highlightel = hl(minl, maxr, peakavg)
+            peakresultarar.append(highlightel)
+
             numpeaks += 1
+
+    peakresultarar.sort(key=lambda xxx: xxx.leftp)
+
+    start = 0
+    if (len(peakresultarar) > 0):
+        end = peakresultarar[0].leftp
+    else:
+        end = 0
+    for t in range(len(peakresultarar) + 1):
+        sumavg = 0
+        for q in range(start, end):
+            sumavg += timestamps[q]
+
+        if (end - start == 0):
+            avgavg = int(sumavg / 1)
+        else:
+            avgavg = int(sumavg / (end - start))
+        highlightel = hl(start, end, avgavg)
+        peakresultavgar.append(highlightel)
+
+        if (t != len(peakresultarar)):
+            start = peakresultarar[t].rightp + 1
+            if (t == (len(peakresultarar) - 1)):
+                end = len(timestamps)
+            else:
+                end = peakresultarar[t + 1].leftp
+
+    peakresult = ''
+    peakresult = peakresult + str(peakresultavgar[0].leftp) + ' ' + str(peakresultavgar[0].cofp) + ' '
+
+    for z in range(len(peakresultarar)):
+        peakresult = peakresult + str(peakresultarar[z].leftp) + ' ' + str(peakresultarar[z].cofp) + ' ' + str(peakresultavgar[z + 1].leftp) + ' ' + str(peakresultavgar[z + 1].cofp) + ' '
 
     return peakresult
 
