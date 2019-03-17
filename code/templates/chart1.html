@@ -35,25 +35,25 @@
 
 			var MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 			var color = Chart.helpers.color;
-			var data = {
-				labels: [],
+			var barChartData = {
+				labels: ["2016"],
 				datasets: [{
-					label: myvalues.length,
+					label: 'highlights',
 					backgroundColor: color(window.chartColors.red).alpha(0.5).rgbString(),
 					borderColor: window.chartColors.red,
 					borderWidth: 1,
 					data: [
+						400
 					]
 				}]
 			};
 
 
 			window.onload = function() {
-
 				var ctx = document.getElementById('canvaschart').getContext('2d');
 				window.myBar = new Chart(ctx, {
 					type: 'bar',
-					data: data,
+					data: barChartData,
 					options: {
 						responsive: true,
 						legend: {
@@ -91,22 +91,7 @@
 						}
 					  ]
 				});
-
-				adddata();
-
 			};
-
-
-			function adddata(){
-			    var i;
-			    var j = 0;
-                for (i = 0; i < myvalues.length; i = i + 3) {
-                	myBar.data.labels[j] = myvalues[i];
-                    myBar.data.datasets[0].data[j] = myvalues[i + 2];
-					j = j + 1;
-                }
-                myBar.update();
-            }
 		</script>
 
 	</body>
