@@ -24,7 +24,7 @@ mail_settings = {
     "MAIL_USE_TLS": False,
     "MAIL_USE_SSL": True,
     "MAIL_USERNAME": 'peakserviceofficial@gmail.com',
-    "MAIL_PASSWORD": '*********'
+    "MAIL_PASSWORD": '***********'
 }
 
 app = Flask(__name__)
@@ -170,7 +170,7 @@ def load_timestamps(url):
     combody.extend(combody_portion)
     comtime.extend(comtime_portion)
 
-    # for p in range(2):
+    # for p in range(5):
     #     combody_portion, comtime_portion, next_cursor = load_portion(video_id, next_cursor)
     #     combody.extend(combody_portion)
     #     comtime.extend(comtime_portion)
@@ -319,8 +319,24 @@ def get_peakresult(timestamps):
         end = peakresultarar[0].leftp
     else:
         end = 0
-    for t in range(len(peakresultarar) + 1):
+    sumavg = 0
+    for q in range(start, end):
+        sumavg += timestamps[q]
+    if (end - start == 0):
+        avgavg = int(sumavg / 1)
+    else:
+        avgavg = int(sumavg / (end - start))
+    highlightel = hl(start, end, avgavg)
+    peakresultavgar.append(highlightel)
+
+    for t in range(len(peakresultarar)):
         sumavg = 0
+        start = peakresultarar[t].rightp + 1
+        if (t == (len(peakresultarar) - 1)):
+            end = len(timestamps)
+        else:
+            end = peakresultarar[t + 1].leftp
+
         for q in range(start, end):
             sumavg += timestamps[q]
 
@@ -331,18 +347,11 @@ def get_peakresult(timestamps):
         highlightel = hl(start, end, avgavg)
         peakresultavgar.append(highlightel)
 
-        if (t != len(peakresultarar)):
-            start = peakresultarar[t].rightp + 1
-            if (t == (len(peakresultarar) - 1)):
-                end = len(timestamps)
-            else:
-                end = peakresultarar[t + 1].leftp
-
     peakresult = ''
-    peakresult = peakresult + str(peakresultavgar[0].leftp) + ' ' + str(peakresultavgar[0].cofp) + ' '
+    peakresult = peakresult + str(peakresultavgar[0].leftp) + ' ' + str(peakresultavgar[0].rightp) + ' ' + str(peakresultavgar[0].cofp) + ' '
 
     for z in range(len(peakresultarar)):
-        peakresult = peakresult + str(peakresultarar[z].leftp) + ' ' + str(peakresultarar[z].cofp) + ' ' + str(peakresultavgar[z + 1].leftp) + ' ' + str(peakresultavgar[z + 1].cofp) + ' '
+        peakresult = peakresult + str(peakresultarar[z].leftp) + ' ' + str(peakresultarar[z].rightp) + ' ' + str(peakresultarar[z].cofp) + ' ' + str(peakresultavgar[z + 1].leftp) + ' ' + str(peakresultavgar[z + 1].rightp) + ' ' + str(peakresultavgar[z + 1].cofp) + ' '
 
     return peakresult
 

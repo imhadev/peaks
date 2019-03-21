@@ -33,11 +33,11 @@
 		<script>
 			var myvalues = [{{ ', '.join(values) }}];
 
-			var MONTHS = [];
 			var color = Chart.helpers.color;
 			var data = {
 				labels: [],
 				datasets: [{
+					type: 'bar',
 					label: 'highlights',
 					backgroundColor: color(window.chartColors.red).alpha(0.5).rgbString(),
 					borderColor: window.chartColors.red,
@@ -46,10 +46,12 @@
 
 					]
 				}, {
-					label: 'avg',
-					backgroundColor: color(window.chartColors.blue).alpha(0.5).rgbString(),
+					type: 'line',
+					label: 'average',
+					backgroundColor: color(window.chartColors.grey).alpha(0.5).rgbString(),
 					borderColor: window.chartColors.blue,
-					borderWidth: 1,
+					borderWidth: 2,
+					fill: true,
 					data: [
 
 					]
@@ -108,18 +110,29 @@
 			function adddata(){
 			    var i;
 			    var j = 0;
-			    var j1 = 0;
-			    var j2 = 0;
-                for (i = 0; i < myvalues.length; i = i + 2) {
-                	if (j % 2 == 0) {
-                		myBar.data.labels[j] = myvalues[i];
-                    	myBar.data.datasets[1].data[j1] = myvalues[i + 1];
-                    	j1++;
+			    var date1, date2;
+			    var result1, result2;
+                for (i = 0; i < myvalues.length; i = i + 3) {
+                	//myBar.data.labels[j] = myvalues[i];
+                	date1 = new Date(null);
+                	if (i != 0) {
+						date1.setSeconds(myvalues[i] * 3 - 2);
+					}
+					else {
+						date1.setSeconds(myvalues[i] * 3);
+					}
+					result1 = date1.toISOString().substr(11, 8);
+					date2 = new Date(null);
+					date2.setSeconds(myvalues[i + 1] * 3);
+					result2 = date2.toISOString().substr(11, 8);
+                	myBar.data.labels[j] = result1 + ' - ' + result2;
+                	if (j % 2 != 0) {
+                		myBar.data.datasets[0].data[j] = myvalues[i + 2];
+                		myBar.data.datasets[1].data[j] = (myvalues[i + 2 - 3] + myvalues[i + 2 + 3]) / 2;
                 	}
                 	else {
-                		myBar.data.labels[j] = myvalues[i];
-                    	myBar.data.datasets[0].data[j2] = myvalues[i + 1];
-                    	j2++;
+						myBar.data.datasets[0].data[j] = 0;
+						myBar.data.datasets[1].data[j] = myvalues[i + 2];
                 	}
                 	j++;
                 }
