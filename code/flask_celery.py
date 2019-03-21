@@ -24,7 +24,7 @@ mail_settings = {
     "MAIL_USE_TLS": False,
     "MAIL_USE_SSL": True,
     "MAIL_USERNAME": 'peakserviceofficial@gmail.com',
-    "MAIL_PASSWORD": '***********'
+    "MAIL_PASSWORD": 'peakpass123'
 }
 
 app = Flask(__name__)
@@ -55,7 +55,6 @@ def about():
 def chart(videoid):
     timestampsres = r.get(videoid).decode("utf-8")
     timestampsresvalues = timestampsres.split()
-    print(timestampsresvalues)
     return render_template('chart.html', values=timestampsresvalues)
 
 
@@ -188,7 +187,7 @@ def load_timestamps(url):
 def set_cof(combody, comtime):
     timestampscof1 = []
     timestampscof2 = []
-    cof = 5
+    cof = 4
 
     lastoffset = comtime[-1]
 
@@ -227,7 +226,7 @@ def get_peakresult(timestamps):
     peakresultavgar = []
 
     numpeaks = 0
-    coftop = 2
+    coftop = 3
     f = True
     while (numpeaks < 10) and f:
         peakresultar = []
@@ -239,7 +238,7 @@ def get_peakresult(timestamps):
                 maxp = timestamps[x]
                 i = x
 
-        if (maxp <= avg):
+        if (maxp <= avg * 1.3):
             f = False
         else:
             timestampscheck[i] = False
@@ -249,11 +248,12 @@ def get_peakresult(timestamps):
             qleft = i - 1
             qright = i + 1
             g = True
-            while (peaklen <= 12) and g:
-                if (qleft < 0) and (qright >= len(timestamps)):
+            while (peaklen <= 15) and g:
+                if ((qleft < 0) or (timestampscheck[qleft] == False)) and \
+                        ((qright >= len(timestamps)) or (timestampscheck[qleft] == qright)):
                     g = False
                 else:
-                    if (qleft < 0):
+                    if (qleft < 0) or (timestampscheck[qleft] == False):
                         if (timestamps[qright] * coftop >= maxp):
                             timestampscheck[qright] = False
                             peakresultar.append(timestamps[qright])
@@ -262,7 +262,7 @@ def get_peakresult(timestamps):
                             qright += 1
                         else:
                             g = False
-                    elif (qright >= len(timestamps)):
+                    elif (qright >= len(timestamps)) or (timestampscheck[qright] == False):
                         if (timestamps[qleft] * coftop >= maxp):
                             timestampscheck[qleft] = False
                             peakresultar.append(timestamps[qleft])
@@ -293,19 +293,22 @@ def get_peakresult(timestamps):
 
             minl = -1
             maxr = -1
-            for id in peakresultidar:
-                if (minl == -1) or id < minl:
-                    minl = id
+            for idp in peakresultidar:
+                if (minl == -1) or idp < minl:
+                    minl = idp
 
-            for id in peakresultidar:
-                if (maxr == -1) or id > maxr:
-                    maxr = id
+            for idp in peakresultidar:
+                if (maxr == -1) or idp > maxr:
+                    maxr = idp
 
             peaksum = 0
             for res in peakresultar:
                 peaksum = peaksum + res
 
-            peakavg = int(peaksum / len(peakresultar))
+            if (len(peakresultar) == 0):
+                peakavg = int(peaksum / 1)
+            else:
+                peakavg = int(peaksum / len(peakresultar))
 
             highlightel = hl(minl, maxr, peakavg)
             peakresultarar.append(highlightel)

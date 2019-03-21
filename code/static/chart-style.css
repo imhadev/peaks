@@ -23,3 +23,9 @@ body {
     height: 410px;
     width: 800px;
 }
+
+canvas {
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+}

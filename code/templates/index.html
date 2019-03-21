@@ -89,39 +89,8 @@
 
 <canvas class="background"></canvas>
 
-<script>
-    window.onload = function() {
-        Particles.init({
-            selector: '.background',
-            color: '#fcfcfc',
-            connectParticles: 'true',
-            maxParticles: 120,
+<script src="static/particles.js"></script>
 
-            responsive: [
-                {
-                  breakpoint: 768,
-                  options: {
-                    maxParticles: 50,
-                    connectParticles: true
-                  }
-                }, {
-                  breakpoint: 425,
-                  options: {
-                    maxParticles: 30,
-                    connectParticles: true
-                  }
-                }, {
-                  breakpoint: 320,
-                  options: {
-                    maxParticles: 10,
-                    connectParticles: true
-                  }
-                }
-              ]
-        });
-    };
-
-</script>
 
 <script>
     function openCity(evt, cityName) {
@@ -138,7 +107,6 @@
       evt.currentTarget.className += " active";
     }
 
-    // Get the element with id="defaultOpen" and click on it
     document.getElementById("defaultOpen").click();
 
 </script>

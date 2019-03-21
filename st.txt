@@ -1,2 +1,3 @@
 celery -A flask_celery.celery worker --pool=solo -l info
 python flask_celery.py
+--concurrency=10
