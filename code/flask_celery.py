@@ -35,28 +35,6 @@ app.config.update(mail_settings)
 mail = Mail(app)
 
 
-@app.route("/testc/<videoid>")
-def testc(videoid):
-    timestampsres = r.get(videoid).decode("utf-8")
-    timestampsresvalues = timestampsres.split()
-    return render_template('testc.html', values=timestampsresvalues)
-
-
-@app.route("/testz")
-def testz():
-    return render_template('testc.html')
-
-
-@app.route("/testl")
-def testl():
-    return render_template('testl.html')
-
-
-@app.route("/test")
-def test():
-    return render_template('test.html')
-
-
 @app.route("/")
 @app.route("/home")
 def home():
@@ -81,7 +59,7 @@ def videoresult():
 
     if (video_id):
         if (r.get(video_id)) and (r.get(video_id).decode("utf-8") != '-1'):
-            return redirect(url_for('testc', videoid=video_id))
+            return redirect(url_for('chart', videoid=video_id))
         elif (r.get(video_id)) and (r.get(video_id).decode("utf-8") == '-1'):
             flash('video is processing', category='info')
     else:

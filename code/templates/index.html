@@ -1,32 +1,17 @@
-<!DOCTYPE html>
-<html lang="en-us">
-<html>
-<head>
-    <meta charset=UTF-8>
-    <title>peak</title>
-    <link rel='shortcut icon' type='image/x-icon' href='/static/favicon.ico'/>
-
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
-
+{% extends "layout.html" %}
+{% block title %}home{% endblock %}
+{% block head %}
+  {{ super() }}
     <link href="{{ url_for('static', filename='index-style.css') }}" rel="stylesheet" type="text/css"/>
+{% endblock %}
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/particlesjs/2.2.2/particles.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
-</head>
-<body>
 
-<div id="wrapper" class="wrapperclass">
+{% block header %}
+    {{ super() }}
+{% endblock %}
 
-    <div id="header">
-        <div class="logoimage selectDisable">
-            <img src=/static/logo.png alt=logo style="width: 232px; height: 112px;">
-        </div>
-    </div>
-
-    <div id="content">
-        <div class="alerts">
+{% block content %}
+    <div class="alerts">
             <div class="container" style="width:500px">
                 {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
@@ -42,8 +27,7 @@
             </div>
         </div>
 
-
-        <div class="submit">
+    <div class="submit">
 
             <div class="tab selectDisable">
                 <button class="tablinks" onclick="openCity(event, 'result')" id="defaultOpen">result</button>
@@ -79,19 +63,15 @@
                 </div>
             </div>
 
-
         </div>
+{% endblock %}
 
-    </div>
+{% block footer %}
+    make sure to read help before using the app
+{% endblock %}
 
-    <div id="footer">
-        make sure to read help before using the app
-    </div>
-
-</div>
-
-<canvas class="background"></canvas>
-<script src="static/particles.js"></script>
-<script src="static/fade.js"></script>
-</body>
-</html>
+{% block bodyend %}
+    <canvas class="background"></canvas>
+    <script src="static/particles.js"></script>
+    <script src="static/fade.js"></script>
+{% endblock %}

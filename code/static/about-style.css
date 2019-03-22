@@ -1,26 +1,7 @@
-html {
-  height: 100%;
-  margin: 0; padding: 0;
-  overflow: hidden;
-}
-
-body {
-    height: 100%;
-    min-width: 500px;
-    background-image: url("bg.jpg");
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
-    /*background-color: #1d1e22;*/
-}
-
-.content {
-}
-
 .peakabt1 {
     margin: auto;
     position: absolute;
-    top: 0; left: 0; bottom: 200px; right: 0;
+    top: 0; left: 0; bottom: 300px; right: 0;
 
     height: 60px;
     width: 550px;
@@ -38,7 +19,7 @@ body {
 .peakabt2 {
     margin: auto;
     position: absolute;
-    top: 0; left: 0; bottom: -150px; right: 0;
+    top: 0; left: 0; bottom: 0px; right: 0;
 
     width: 550px;
     height: 220px;

@@ -1,72 +1,40 @@
-<!DOCTYPE html>
-<html>
-	<head>
-		<title>peak</title>
-        <link rel='shortcut icon' type='image/x-icon' href='/static/favicon.ico' />
+{% extends "layout.html" %}
+{% block title %}chart{% endblock %}
+{% block head %}
+    {{ super() }}
+    <link href="{{ url_for('static', filename='about-style.css') }}" rel="stylesheet" type="text/css"/>
+{% endblock %}
 
-		<meta charset = UTF-8>
-		<link href = "{{ url_for('static', filename='about-style.css') }}" rel = "stylesheet" type = "text/css"/>
-	</head>
-	<body>
-		<div class = content>
-			<div class = peakabt1>
-				<p>about <br>
-					peak is a service for auto-generating highlights from twitch vods</p>
-			</div>
+{% block header %}
+    {{ super() }}
+{% endblock %}
 
-			<div class = peakabt2>
-				<p>how to use<br>
-					1. access already processed video:<br>
-					enter/pass the video id into the video_id field<br>
-					data about the proccessed video is stored for 1 week<br><br>
+{% block content %}
+    <div class = peakabt1>
+        <p>about <br>
+            peak is a service for auto-generating highlights from twitch vods</p>
+    </div>
 
-					2. proccess a new video:<br>
-					getting code<br>
-					you can get the code sent to your email by entering/passing your email into the email field<br>
-					you can get up to 2 codes per day<br>
-					code is active for 1 day<br><br>
+    <div class = peakabt2>
+        <p>how to use<br>
+            1. access already processed video:<br>
+            enter/pass the video id into the video_id field<br>
+            data about the proccessed video is stored for 1 week<br><br>
 
-					enter/pass the video id into the video_id field and code into the video_code field</p>
-			</div>
-		</div>
+            2. proccess a new video:<br>
+            getting code<br>
+            you can get the code sent to your email by entering/passing your email into the email field<br>
+            you can get up to 2 codes per day<br>
+            code is active for 1 day<br><br>
 
-		<canvas class="background"></canvas>
+            enter/pass the video id into the video_id field and code into the video_code field</p>
+    </div>
+{% endblock %}
 
-        <script>
-            window.onload = function() {
-                Particles.init({
-                    selector: '.background',
-  					color: '#fcfcfc',
-  					connectParticles: 'true',
-  					maxParticles: 120,
+{% block footer %}
+{% endblock %}
 
-  					responsive: [
-						{
-						  breakpoint: 768,
-						  options: {
-							maxParticles: 50,
-							connectParticles: true
-						  }
-						}, {
-						  breakpoint: 425,
-						  options: {
-							maxParticles: 30,
-							connectParticles: true
-						  }
-						}, {
-						  breakpoint: 320,
-						  options: {
-							maxParticles: 10,
-							connectParticles: true
-						  }
-						}
-					  ]
-                });
-            };
-        </script>
-
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/particlesjs/2.2.2/particles.min.js"></script>
-       <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-       <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
-	</body>
-</html>
+{% block bodyend %}
+    <canvas class="background"></canvas>
+    <script src="static/particles.js"></script>
+{% endblock %}
