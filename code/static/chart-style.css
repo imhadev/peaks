@@ -3,10 +3,10 @@
 
     margin: auto;
     position: absolute;
-    top: 0; left: 0; bottom: 150px; right: 0;
+    top: 0; left: 0; bottom: 100px; right: 0;
 
-    height: 410px;
-    width: 800px;
+    height: 460px;
+    width: 900px;
 }
 
 canvas {

@@ -1,5 +1,5 @@
 {% extends "layout.html" %}
-{% block title %}chart{% endblock %}
+{% block title %}about{% endblock %}
 {% block head %}
     {{ super() }}
     <link href="{{ url_for('static', filename='about-style.css') }}" rel="stylesheet" type="text/css"/>
@@ -12,22 +12,24 @@
 {% block content %}
     <div class = peakabt1>
         <p>about <br>
-            peak is a service for auto-generating highlights from twitch vods</p>
+            peak is a service for auto-searching highlights in twitch vods</p>
     </div>
 
     <div class = peakabt2>
         <p>how to use<br>
             1. access already processed video:<br>
-            enter/pass the video id into the video_id field<br>
-            data about the proccessed video is stored for 1 week<br><br>
+            go to result tab and submit video id into the video id field<br><br>
 
-            2. proccess a new video:<br>
+            2. process a new video:<br>
             getting code<br>
-            you can get the code sent to your email by entering/passing your email into the email field<br>
-            you can get up to 2 codes per day<br>
-            code is active for 1 day<br><br>
+            go to code tab and submit your email into the email field<br>
+            2 codes will be sent to your email<br>
+            you can get 2 codes per day<br>
+            codes are active for 7 days<br><br>
 
-            enter/pass the video id into the video_id field and code into the video_code field</p>
+            go to process tab and submit video id into the video id field,<br>
+            code into the code field<br>
+            data about processed videos is stored for 7 days</p>
     </div>
 {% endblock %}
 

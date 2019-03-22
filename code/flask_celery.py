@@ -62,6 +62,8 @@ def videoresult():
             return redirect(url_for('chart', videoid=video_id))
         elif (r.get(video_id)) and (r.get(video_id).decode("utf-8") == '-1'):
             flash('video is processing', category='info')
+        else:
+            flash('invalid video id', category='warning')
     else:
         flash('invalid video id', category='warning')
 
@@ -73,12 +75,15 @@ def mailcode():
     email_link = request.form['emaillink']
 
     if (email_link):
-        if (r.get(email_link)):
-            flash('too many requests', category='warning')
+        if re.match(r'[^@]+@[^@]+\.[^@]+', email_link):
+            if (r.get(email_link)):
+                flash('too many requests', category='warning')
+            else:
+                flash('codes were sent to your email', category='success')
+                sendmail.delay(email_link)
+                r.setex(email_link, 86400, 1)
         else:
-            flash('codes were sent to your email', category='success')
-            sendmail.delay(email_link)
-            r.set(email_link, 1)
+            flash('invalid email', category='warning')
     else:
         flash('invalid email', category='warning')
 
@@ -90,23 +95,24 @@ def videocode():
     video_id = request.form['videoid']
     video_code = request.form['videocode']
 
-    peakfunc.delay(video_id)
-
-    # if (video_id) and (video_code):
-    #     if (r.get(video_id)) and (r.get(video_id).decode("utf-8") != '-1'):
-    #         flash('video is already processed', category='info')
-    #     elif (r.get(video_id)) and (r.get(video_id).decode("utf-8") == '-1'):
-    #         flash('video is processing', category='info')
-    #     else:
-    #         if (r.get(video_code)):
-    #             r.delete(video_code)
-    #             r.set(video_id, -1)
-    #             peakfunc.delay(video_id)
-    #             flash('video is processing, come back later to check the result', category='success')
-    #         else:
-    #             flash('invalid video code', category='warning')
-    # else:
-    #     flash('invalid video id or code', category='warning')
+    if (video_id) and (video_code):
+        if (r.get(video_id)) and (r.get(video_id).decode("utf-8") != '-1'):
+            flash('video is already processed', category='info')
+        elif (r.get(video_id)) and (r.get(video_id).decode("utf-8") == '-1'):
+            flash('video is processing', category='info')
+        else:
+            if (r.get(video_code)):
+                if (check(video_id) == 0):
+                    flash('invalid video id', category='warning')
+                else:
+                    r.delete(video_code)
+                    r.set(video_id, -1)
+                    peakfunc.delay(video_id)
+                    flash('video is processing, come back later to check the result', category='success')
+            else:
+                flash('invalid video code', category='warning')
+    else:
+        flash('invalid video id or code', category='warning')
 
     return render_template('index.html')
 
@@ -114,7 +120,7 @@ def videocode():
 @celery.task(name='__main__.peakfunc')
 def peakfunc(video_id):
     timestamps = load_timestamps(f'https://www.twitch.tv/videos/{video_id}')
-    r.set(video_id, timestamps)
+    r.setex(video_id, 604800, timestamps)
 
 
 def load_portion(video_id, cursor=None):
@@ -163,11 +169,6 @@ def load_timestamps(url):
     combody_portion, comtime_portion, next_cursor = load_portion(video_id)
     combody.extend(combody_portion)
     comtime.extend(comtime_portion)
-
-    # for p in range(5):
-    #     combody_portion, comtime_portion, next_cursor = load_portion(video_id, next_cursor)
-    #     combody.extend(combody_portion)
-    #     comtime.extend(comtime_portion)
 
     while next_cursor and comtime:
         combody_portion, comtime_portion, next_cursor = load_portion(video_id, next_cursor)
@@ -358,8 +359,23 @@ def get_peakresult(timestamps):
 def sendmail(email_link):
     code1 = id_generator()
     code2 = id_generator()
-    r.set(code1, 1)
-    r.set(code2, 1)
+
+    f1 = True
+    f2 = True
+
+    while (f1):
+        if (r.get(code1)):
+            code1 = id_generator()
+        else:
+            r.setex(code1, 604800, 1)
+            f1 = False
+
+    while (f2):
+        if (r.get(code2)):
+            code2 = id_generator()
+        else:
+            r.setex(code2, 604800, 1)
+            f2 = False
 
     with app.app_context():
         msg = Message('Hello', sender='peakserviceofficial@gmail.com', recipients=[email_link])
@@ -369,6 +385,24 @@ def sendmail(email_link):
 
 def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
     return ''.join(random.choice(chars) for _ in range(size))
+
+
+def check(video_id):
+    params = {}
+
+    response = requests.get(
+        url=f'https://api.twitch.tv/v5/videos/{video_id}/comments',
+        params=params,
+        headers={
+            'Client-ID': 'ccn4gx4qj2tnvd2zpy1vkhmlkn0hg6',
+        },
+    )
+
+    parsed_response = response.json()
+    if (parsed_response.get('error') == 'Bad Request'):
+        return 0
+    else:
+        return 1
 
 
 if __name__ == '__main__':

@@ -35,7 +35,7 @@
                 <button class="tablinks" onclick="openCity(event, 'submit')">submit</button>
             </div>
 
-            <div id="result" class="tabcontent">
+            <div id="result" class="tabcontent selectDisable">
                 <div class = resulttab>
                     <form action="/videoresult" method="post">
                         video id: <input type="text" name="videoid"><br>
@@ -44,16 +44,16 @@
                 </div>
             </div>
 
-            <div id="code" class="tabcontent">
+            <div id="code" class="tabcontent selectDisable">
                 <div class = codetab>
                     <form action="/mailcode" method="post">
-                        email: <input type="text" name="emaillink"><br>
+                        email:  <input type="text" name="emaillink"><br>
                         <input type="submit" value="submit">
                     </form>
                 </div>
             </div>
 
-            <div id="submit" class="tabcontent">
+            <div id="submit" class="tabcontent selectDisable">
                 <div class = submittab>
                     <form action="/videocode" method="post">
                         video id: <input type="text" name="videoid"><br>
@@ -67,7 +67,9 @@
 {% endblock %}
 
 {% block footer %}
-    make sure to read help before using the app
+    <div class = selectDisable>
+        make sure to read <a href="/about">about</a> before using the app
+    </div>
 {% endblock %}
 
 {% block bodyend %}

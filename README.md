@@ -1,2 +1,2 @@
 # peak
-twitch vod highlights auto generator
+service for auto-searching highlights in twitch vods

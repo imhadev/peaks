@@ -1,3 +1,5 @@
-saenv
 venv
 .idea
+*.pyc
+*.pyo
+.logs/*.log
