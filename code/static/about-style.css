@@ -1,13 +1,13 @@
 .peakabt1 {
     margin: auto;
     position: absolute;
-    top: 0; left: 0; bottom: 400px; right: 0;
+    top: 0; left: 0; bottom: 420px; right: 0;
 
-    height: 60px;
+    height: 80px;
     width: 450px;
     padding: 15px;
 
-    padding-left: 35px;
+    padding-left: 30px;
     padding-top: 10px;
 
     text-align: left;
@@ -19,13 +19,13 @@
 .peakabt2 {
     margin: auto;
     position: absolute;
-    top: 0; left: 0; bottom: 0px; right: 0;
+    top: 0; left: 0; bottom: -20px; right: 0;
 
     width: 450px;
-    height: 300px;
+    height: 340px;
     padding: 15px;
 
-    padding-left: 35px;
+    padding-left: 30px;
     padding-top: 10px;
 
     text-align: left;
