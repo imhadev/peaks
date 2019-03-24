@@ -1,0 +1,14 @@
+version: "3"
+services:
+  app:
+    image: app
+    ports:
+      - "5000:5000"
+    container_name: "app"
+  worker:
+    image: worker
+    container_name: "worker"
+  redis:
+    image: "redis:alpine"
+    expose:
+      - 6379

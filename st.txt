@@ -1,4 +1,2 @@
-celery -A flask_celery.celery worker --pool=solo -l info
-
 celery -A flask_celery.celery worker --pool=eventlet -l info --concurrency=4
 python flask_celery.py
